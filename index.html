@@ -1,0 +1,82 @@
+<html>
+
+<head>
+    <!-- Include the p5.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.0.0/p5.min.js"></script>
+ 
+    <!-- Include the ml5.js library -->
+    <script src="https://unpkg.com/ml5@latest/dist/ml5.min.js"></script>
+    <style>
+    /* Set styles for HTML elements */
+    h1, h2 {font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; text-align: center;} 
+    .imageInput {width: 20%; text-align: center; margin-top: 1em; margin-left: 80%; margin-bottom: 0.5em;}
+    .imageResult {font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; width: 70%; margin-left: 10%; }
+    .uploadedImage {width: 20%; height: auto; margin-left: 75%;}
+    </style> 
+</head>
+
+<body>
+<h1>MakeUseOf Image Classifier</h1>
+ 
+<h2>Click "Choose File" to Add an Image</h2>
+ 
+<!-- Container for image classification result -->
+<div class="imageResult" id="imageResult"></div>
+ 
+<div class="imageInput">
+    <input type="file"
+      oninput="uploadedImage.src=window.URL.createObjectURL(this.files[0]); startImageScan()">
+</div>
+ 
+<!-- Container for the uploaded image -->
+<img class="uploadedImage" id="uploadedImage" />
+ 
+<script>
+// Create a variable containing the result container
+const element = document.getElementById("imageResult");
+ 
+function startImageScan() {
+    // Create a variable to initialize the ml5.js image classifier with MobileNet
+    const classifier = ml5.imageClassifier('https://teachablemachine.withgoogle.com/models/gJTGqBomo/');
+ 
+    // Scan the uploaded image
+    classifier.classify(document.getElementById("uploadedImage"), imageScanResult);
+    element.innerHTML = "...";
+}
+ 
+// Check for errors and display the results if there aren't any
+function imageScanResult(error, results) {
+    if (error) {
+        element.innerHTML = error;
+    } else {
+        let num = results[0].confidence * 100;
+        element.innerHTML = results[0].label + "  Confidence: " + num.toFixed(0) + "%";
+    }
+}
+
+function imageScanResult(error, results) {
+    if (error) {
+        element.innerHTML = error;
+    } else {
+        let num = results[0].confidence * 100;
+        let label = results[0].label;
+        let text = "";
+
+        if (label === "adeno") {
+            text = "Adenocarcinoma:"+"<br><br>Description: Adenocarcinoma is a type of cancer that develops in the glandular cells of an organ, typically originating in the epithelial tissue. It can occur in various organs, including the lungs, colon, prostate, breast, and pancreas.<br><br>Symptoms: The symptoms depend on the location of the tumor, but common signs of adenocarcinoma include persistent cough, shortness of breath, chest pain, unexplained weight loss, fatigue, changes in bowel or bladder habits, and abnormal bleeding.<br><br>External reading: For more information on adenocarcinoma, you can visit the American Cancer Society's website: Adenocarcinoma"
+        } else if (label === "squamous") {
+            text = "Squamous cell carcinoma:"+"<br><br>Description: Squamous cell carcinoma is a form of cancer that arises from the squamous cells, which are flat cells found in the outermost layer of the skin or the lining of certain organs. It commonly occurs in areas exposed to the sun, such as the skin, but can also develop in the lungs, cervix, esophagus, and other areas.<br><br>Symptoms: Symptoms of squamous cell carcinoma can include a persistent sore or lesion that does not heal, a scaly patch on the skin, a raised growth or lump, a wart-like growth, bleeding or oozing from a lesion, and changes in the appearance of a mole.<br><br>External reading: The Skin Cancer Foundation provides valuable information on squamous cell carcinoma: Squamous Cell Carcinoma";
+        } else if (label === "large") {
+            text = "Large cell carcinoma:<br><br>Description: Large cell carcinoma is a type of non-small cell lung cancer (NSCLC) that is characterized by the presence of large, abnormal-looking cells. It accounts for a small percentage of lung cancers and is generally more aggressive than other types of NSCLC.<br><br>Symptoms: The symptoms of large cell carcinoma are similar to other types of lung cancer and can include persistent cough, chest pain, shortness of breath, coughing up blood, fatigue, unexplained weight loss, and recurring respiratory infections.<br><br>External reading: To learn more about large cell carcinoma, you can read the information provided by Cancer.Net: Large Cell Carcinoma";
+        } else {
+            text = "normal";
+        }
+        
+        element.innerHTML = " Confidence: " + num.toFixed(0) + "% <br>" + text;
+    }
+}
+</script>
+
+</body>
+
+</html>
